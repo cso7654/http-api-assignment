@@ -29,5 +29,45 @@
   </section>
   <section id="content">
   </section>
+
+  <script>
+     document.querySelector("button#send").addEventListener("click", sendRequest);
+
+     function sendRequest(){
+        let type = document.querySelector("select#type").value;
+        let xhr = new XMLHttpRequest();
+        let page = document.querySelector("select#page");
+        xhr.open("GET", page.value, true);
+        xhr.setRequestHeader("Content-type", type);
+        xhr.send();
+
+        xhr.onreadystatechange = function() {
+           if (this.readyState == 4){
+            let msg = "";
+            let status = "";
+
+            if (type == "text/xml"){
+               status = this.responseXML.querySelector("id");
+               status = !status ? "Success" : status.innerHTML;
+               msg = this.responseXML.querySelector("message").innerHTML;
+            }else {
+               let message = JSON.parse(this.response);
+               status = message["id"] ? message["id"]: "Success";
+               msg = message["message"];
+            }
+            let content = document.querySelector("section#content");
+            content.innerHTML = "";
+            let statusElem = document.createElement("h1");
+            statusElem.innerHTML = status;
+            content.append(statusElem);
+
+            let messageElem = document.createElement("h2");
+            messageElem.innerHTML = msg;
+            content.append(messageElem);
+
+          }
+        };
+     }
+  </script>
 </body>
 </html>
